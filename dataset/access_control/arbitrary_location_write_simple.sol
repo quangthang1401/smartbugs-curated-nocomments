@@ -1,3 +1,9 @@
+  
+                                                                                                                
+                          
+                           
+   
+
  pragma solidity ^0.4.25;
 
  contract Wallet {
@@ -17,14 +23,14 @@
      }
 
      function PopBonusCode() public {
-
-         require(0 <= bonusCodes.length);
-         bonusCodes.length--;
+                                         
+         require(0 <= bonusCodes.length);                                                                  
+         bonusCodes.length--;                                   
      }
 
      function UpdateBonusCodeAt(uint idx, uint c) public {
          require(idx < bonusCodes.length);
-         bonusCodes[idx] = c;
+         bonusCodes[idx] = c;                                                  
      }
 
      function Destroy() public {

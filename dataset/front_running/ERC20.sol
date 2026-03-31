@@ -1,9 +1,24 @@
+  
+                                                                                                                               
+             
+                                
+   
+
 pragma solidity ^0.4.24;
 
+                                      
+                  
+                                                               
+   
 library SafeMath {
 
+     
+                                                     
+    
   function mul(uint256 a, uint256 b) internal pure returns (uint256) {
-
+                                                                                   
+                                             
+                                                                          
     if (a == 0) {
       return 0;
     }
@@ -14,13 +29,20 @@ library SafeMath {
     return c;
   }
 
+     
+                                                                                              
+    
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    require(b > 0);
+    require(b > 0);                                                          
     uint256 c = a / b;
+                                                                                 
 
     return c;
   }
 
+     
+                                                                                                 
+    
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
     require(b <= a);
     uint256 c = a - b;
@@ -28,6 +50,9 @@ library SafeMath {
     return c;
   }
 
+     
+                                               
+    
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
     require(c >= a);
@@ -35,11 +60,16 @@ library SafeMath {
     return c;
   }
 
+     
+                                                                                 
+                                  
+    
   function mod(uint256 a, uint256 b) internal pure returns (uint256) {
     require(b != 0);
     return a % b;
   }
 }
+
 
 contract ERC20 {
 
@@ -61,6 +91,7 @@ contract ERC20 {
     return _balances[owner];
   }
 
+
   function allowance(address owner, address spender) public view returns (uint256)
   {
     return _allowed[owner][spender];
@@ -75,10 +106,10 @@ contract ERC20 {
     emit Transfer(msg.sender, to, value);
     return true;
   }
-
+                                 
   function approve(address spender, uint256 value) public returns (bool) {
     require(spender != address(0));
-
+                                    
     _allowed[msg.sender][spender] = value;
     emit Approval(msg.sender, spender, value);
     return true;

@@ -1,3 +1,9 @@
+  
+                                                                                                                                        
+                      
+                                 
+   
+
 pragma solidity ^0.4.21;
 
 contract TokenSaleChallenge {
@@ -13,9 +19,9 @@ contract TokenSaleChallenge {
     }
 
     function buy(uint256 numTokens) public payable {
-
+                                    
         require(msg.value == numTokens * PRICE_PER_TOKEN);
-
+                                    
         balanceOf[msg.sender] += numTokens;
     }
 
@@ -23,7 +29,7 @@ contract TokenSaleChallenge {
         require(balanceOf[msg.sender] >= numTokens);
 
         balanceOf[msg.sender] -= numTokens;
-
+                                    
         msg.sender.transfer(numTokens * PRICE_PER_TOKEN);
     }
 }

@@ -1,9 +1,26 @@
+  
+                                                                                                         
+                                                                                        
+                                            
+             
+   
+
+                       
 pragma solidity ^0.4.0;
 
  contract LuckyDoubler {
+                                                            
+                                                            
+                                                            
+                                                            
+                                              
+                                                             
+                                                             
+                                              
 
     address private owner;
 
+                      
     uint private balance = 0;
     uint private fee = 5;
     uint private multiplier = 125;
@@ -12,6 +29,7 @@ pragma solidity ^0.4.0;
     Entry[] private entries;
     uint[] private unpaidEntries;
 
+                                    
     function LuckyDoubler() {
         owner = msg.sender;
     }
@@ -31,6 +49,7 @@ pragma solidity ^0.4.0;
         bool paid;
     }
 
+                       
     function() {
         init();
     }
@@ -47,6 +66,7 @@ pragma solidity ^0.4.0;
 
     function join() private {
 
+                                
         uint dValue = 1 ether;
 
         if (msg.value > 1 ether) {
@@ -55,6 +75,7 @@ pragma solidity ^0.4.0;
         	dValue = 1 ether;
         }
 
+                                          
         if (users[msg.sender].id == address(0))
         {
             users[msg.sender].id = msg.sender;
@@ -62,15 +83,18 @@ pragma solidity ^0.4.0;
             users[msg.sender].payoutsReceived = 0;
         }
 
+                                            
         entries.push(Entry(msg.sender, dValue, (dValue * (multiplier) / 100), false));
         users[msg.sender].deposits++;
         unpaidEntries.push(entries.length -1);
 
+                                                  
         balance += (dValue * (100 - fee)) / 100;
 
         uint index = unpaidEntries.length > 1 ? rand(unpaidEntries.length) : 0;
         Entry theEntry = entries[unpaidEntries[index]];
 
+                                                              
         if (balance > theEntry.payout) {
 
             uint payout = theEntry.payout;
@@ -88,6 +112,7 @@ pragma solidity ^0.4.0;
 
         }
 
+                                                                                               
         uint fees = this.balance - balance;
         if (fees > 0)
         {
@@ -96,8 +121,9 @@ pragma solidity ^0.4.0;
 
     }
 
+                                            
     uint256 constant private FACTOR =  1157920892373161954235709850086879078532699846656405640394575840079131296399;
-
+                                    
     function rand(uint max) constant private returns (uint256 result){
         uint256 factor = FACTOR * 100 / max;
         uint256 lastBlockNumber = block.number - 1;
@@ -106,6 +132,8 @@ pragma solidity ^0.4.0;
         return uint256((uint256(hashVal) / factor)) % max;
     }
 
+
+                         
     function changeOwner(address newOwner) onlyowner {
         owner = newOwner;
     }
@@ -122,6 +150,8 @@ pragma solidity ^0.4.0;
         fee = newFee;
     }
 
+
+                    
     function multiplierFactor() constant returns (uint factor, string info) {
         factor = multiplier;
         info = 'The current multiplier applied to all deposits. Min 110%, max 150%.';
@@ -156,5 +186,6 @@ pragma solidity ^0.4.0;
             info = 'Entry info: user address, expected payout in Finneys, payout status.';
         }
     }
+
 
 }

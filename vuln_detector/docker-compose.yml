@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  vuln-detector:
+    build: .
+    container_name: vuln-detector-app
+    ports:
+      - "8501:8501"
+    volumes:
+      - .:/app  # Live reload for development
+      - ./data:/app/data  # Persist SQLite data
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped

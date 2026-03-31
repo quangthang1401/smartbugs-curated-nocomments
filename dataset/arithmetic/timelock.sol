@@ -1,5 +1,12 @@
- pragma solidity ^0.4.10;
+  
+                                                          
+             
+                           
+   
 
+                      
+ pragma solidity ^0.4.10;
+ 
  contract TimeLock {
 
      mapping(address => uint) public balances;
@@ -11,7 +18,7 @@
      }
 
      function increaseLockTime(uint _secondsToIncrease) public {
-
+                                     
          lockTime[msg.sender] += _secondsToIncrease;
      }
 

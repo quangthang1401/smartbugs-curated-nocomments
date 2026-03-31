@@ -1,4 +1,10 @@
-pragma solidity ^0.4.11;
+  
+                         
+             
+                           
+   
+
+pragma solidity ^0.4.11;                          
 
 contract Owned {
     function Owned() {
@@ -7,28 +13,35 @@ contract Owned {
 
     address public owner;
 
+                                                                       
+                                                                        
+                                        
     modifier onlyOwner { if (msg.sender == owner) _; }
 
     function changeOwner(address _newOwner) onlyOwner {
         owner = _newOwner;
     }
 
+                                                                         
+                                                                 
+                                                                        
     function execute(address _dst, uint _value, bytes _data) onlyOwner {
-
+                                            
         _dst.call.value(_value)(_data);
     }
 }
-
+                                                    
 contract Token {
     function transfer(address, uint) returns(bool);
     function balanceOf(address) constant returns (uint);
 }
 
 contract TokenSender is Owned {
-    Token public token;
+    Token public token;                                 
     uint public totalToDistribute;
 
     uint public next;
+
 
     struct Transfer {
         address addr;
@@ -41,10 +54,18 @@ contract TokenSender is Owned {
         token = Token(_token);
     }
 
+                                 
     uint constant D160 = 0x0010000000000000000000000000000000000000000;
 
+                                                                        
+                                                                         
+                                                                               
+                                                                             
+                                                                            
+                          
     function fill(uint[] data) onlyOwner {
 
+                                                     
         if (next>0) throw;
 
         uint acc;
@@ -60,12 +81,16 @@ contract TokenSender is Owned {
         }
         totalToDistribute += acc;
     }
-
+                                                                               
+                                                                         
+                                                         
     function run() onlyOwner {
         if (transfers.length == 0) return;
 
+                                                       
         uint mNext = next;
 
+                                                            
         next = transfers.length;
 
         if ((mNext == 0 ) && ( token.balanceOf(this) != totalToDistribute)) throw;
@@ -79,8 +104,14 @@ contract TokenSender is Owned {
             mNext ++;
         }
 
+                                            
         next = mNext;
     }
+
+
+                           
+                       
+                           
 
     function hasTerminated() constant returns (bool) {
         if (transfers.length == 0) return false;

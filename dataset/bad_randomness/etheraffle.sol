@@ -1,3 +1,10 @@
+  
+                                                                                                         
+                                                                                        
+                                              
+             
+   
+
  pragma solidity ^0.4.16;
 
 contract Ethraffle_v4b {
@@ -28,24 +35,28 @@ contract Ethraffle_v4b {
         uint number
     );
 
+                
     uint public constant prize = 2.5 ether;
     uint public constant fee = 0.03 ether;
     uint public constant totalTickets = 50;
-    uint public constant pricePerTicket = (prize + fee) / totalTickets;
+    uint public constant pricePerTicket = (prize + fee) / totalTickets;                                 
     address feeAddress;
 
+                               
     bool public paused = false;
     uint public raffleId = 1;
-
+                                    
     uint public blockNumber = block.number;
     uint nextTicket = 0;
     mapping (uint => Contestant) contestants;
     uint[] gaps;
 
+                     
     function Ethraffle_v4b() public {
         feeAddress = msg.sender;
     }
 
+                                                                
     function () payable public {
         buyTickets();
     }
@@ -72,21 +83,23 @@ contract Ethraffle_v4b {
             moneySent -= pricePerTicket;
         }
 
+                                                   
         if (nextTicket == totalTickets) {
             chooseWinner();
         }
 
+                                   
         if (moneySent > 0) {
             msg.sender.transfer(moneySent);
         }
     }
 
     function chooseWinner() private {
-
+                                        
         address seed1 = contestants[uint(block.coinbase) % totalTickets].addr;
-
+                                        
         address seed2 = contestants[uint(msg.sender) % totalTickets].addr;
-
+                                        
         uint seed3 = block.difficulty;
         bytes32 randHash = keccak256(seed1, seed2, seed3);
 
@@ -94,15 +107,22 @@ contract Ethraffle_v4b {
         address winningAddress = contestants[winningNumber].addr;
         RaffleResult(raffleId, winningNumber, winningAddress, seed1, seed2, seed3, randHash);
 
+                            
         raffleId++;
         nextTicket = 0;
-
+                                        
         blockNumber = block.number;
 
+                                                
+                                                 
+                                             
+
+                                   
         winningAddress.transfer(prize);
         feeAddress.transfer(fee);
     }
 
+                                                   
     function getRefund() public {
         uint refund = 0;
         for (uint i = 0; i < totalTickets; i++) {
@@ -119,6 +139,7 @@ contract Ethraffle_v4b {
         }
     }
 
+                                                                 
     function endRaffle() public {
         if (msg.sender == feeAddress) {
             paused = true;
@@ -133,7 +154,7 @@ contract Ethraffle_v4b {
             RaffleResult(raffleId, totalTickets, address(0), address(0), address(0), 0, 0);
             raffleId++;
             nextTicket = 0;
-
+                                            
             blockNumber = block.number;
             gaps.length = 0;
         }

@@ -1,22 +1,32 @@
+  
+                                                                                                         
+                                                                                        
+                                 
+             
+   
+
  pragma solidity ^0.4.9;
 
 library Deck {
+	                                     
+	                                                                                     
+	                                                                                        
 
 	function deal(address player, uint8 cardNumber) internal returns (uint8) {
-
+		                                
 		uint b = block.number;
-
+		                                
 		uint timestamp = block.timestamp;
-
+		                                
 		return uint8(uint256(keccak256(block.blockhash(b), player, cardNumber, timestamp)) % 52);
 	}
 
 	function valueOf(uint8 card, bool isBigAce) internal constant returns (uint8) {
 		uint8 value = card / 4;
-		if (value == 0 || value == 11 || value == 12) {
+		if (value == 0 || value == 11 || value == 12) {              
 			return 10;
 		}
-		if (value == 1 && isBigAce) {
+		if (value == 1 && isBigAce) {                   
 			return 11;
 		}
 		return value;
@@ -31,10 +41,11 @@ library Deck {
 	}
 }
 
+
 contract BlackJack {
 	using Deck for *;
 
-	uint public minBet = 50 finney;
+	uint public minBet = 50 finney;            
 	uint public maxBet = 5 ether;
 
 	uint8 BLACKJACK = 21;
@@ -42,13 +53,13 @@ contract BlackJack {
   enum GameState { Ongoing, Player, Tie, House }
 
 	struct Game {
-		address player;
-		uint bet;
+		address player;                  
+		uint bet;          
 
-		uint8[] houseCards;
-		uint8[] playerCards;
+		uint8[] houseCards;                 
+		uint8[] playerCards;                
 
-		GameState state;
+		GameState state;             
 		uint8 cardsDealt;
 	}
 
@@ -56,7 +67,7 @@ contract BlackJack {
 
 	modifier gameIsGoingOn() {
 		if (games[msg.sender].player == 0 || games[msg.sender].state != GameState.Ongoing) {
-			throw;
+			throw;                                          
 		}
 		_;
 	}
@@ -85,18 +96,20 @@ contract BlackJack {
 
 	}
 
+	                    
 	function deal() public payable {
 		if (games[msg.sender].player != 0 && games[msg.sender].state == GameState.Ongoing) {
-			throw;
+			throw;                            
 		}
 
 		if (msg.value < minBet || msg.value > maxBet) {
-			throw;
+			throw;                 
 		}
 
 		uint8[] memory houseCards = new uint8[](1);
 		uint8[] memory playerCards = new uint8[](2);
 
+		                 
 		playerCards[0] = Deck.deal(msg.sender, 0);
 		Deal(true, playerCards[0]);
 		houseCards[0] = Deck.deal(msg.sender, 1);
@@ -116,6 +129,7 @@ contract BlackJack {
 		checkGameResult(games[msg.sender], false);
 	}
 
+	                                    
 	function hit() public gameIsGoingOn {
 		uint8 nextCard = games[msg.sender].cardsDealt;
 		games[msg.sender].playerCards.push(Deck.deal(msg.sender, nextCard));
@@ -124,6 +138,7 @@ contract BlackJack {
 		checkGameResult(games[msg.sender], false);
 	}
 
+	                    
 	function stand() public gameIsGoingOn {
 
 		var (houseScore, houseScoreBig) = calculateScore(games[msg.sender].houseCards);
@@ -140,57 +155,60 @@ contract BlackJack {
 		checkGameResult(games[msg.sender], true);
 	}
 
+	                                                                                                        
 	function checkGameResult(Game game, bool finishGame) private {
-
+		                        
 		var (houseScore, houseScoreBig) = calculateScore(game.houseCards);
-
+		                         
 		var (playerScore, playerScoreBig) = calculateScore(game.playerCards);
 
 		GameStatus(houseScore, houseScoreBig, playerScore, playerScoreBig);
 
 		if (houseScoreBig == BLACKJACK || houseScore == BLACKJACK) {
 			if (playerScore == BLACKJACK || playerScoreBig == BLACKJACK) {
-
-				if (!msg.sender.send(game.bet)) throw;
-				games[msg.sender].state = GameState.Tie;
+				      
+				if (!msg.sender.send(game.bet)) throw;                            
+				games[msg.sender].state = GameState.Tie;                   
 				return;
 			} else {
-
-				games[msg.sender].state = GameState.House;
+				            
+				games[msg.sender].state = GameState.House;                          
 				return;
 			}
 		} else {
 			if (playerScore == BLACKJACK || playerScoreBig == BLACKJACK) {
-
+				             
 				if (game.playerCards.length == 2 && (Deck.isTen(game.playerCards[0]) || Deck.isTen(game.playerCards[1]))) {
-
-					if (!msg.sender.send((game.bet * 5) / 2)) throw;
+					                                   
+					if (!msg.sender.send((game.bet * 5) / 2)) throw;                            
 				} else {
-
-					if (!msg.sender.send(game.bet * 2)) throw;
+					                               
+					if (!msg.sender.send(game.bet * 2)) throw;                            
 				}
-				games[msg.sender].state = GameState.Player;
+				games[msg.sender].state = GameState.Player;                   
 				return;
 			} else {
 
 				if (playerScore > BLACKJACK) {
-
+					                  
 					Log(1);
-					games[msg.sender].state = GameState.House;
+					games[msg.sender].state = GameState.House;                   
 					return;
 				}
 
 				if (!finishGame) {
-					return;
+					return;                     
 				}
 
+                          
 				uint8 playerShortage = 0;
 				uint8 houseShortage = 0;
 
+				                                    
 				if (playerScoreBig > BLACKJACK) {
 					if (playerScore > BLACKJACK) {
-
-						games[msg.sender].state = GameState.House;
+						            
+						games[msg.sender].state = GameState.House;                          
 						return;
 					} else {
 						playerShortage = BLACKJACK - playerScore;
@@ -201,8 +219,8 @@ contract BlackJack {
 
 				if (houseScoreBig > BLACKJACK) {
 					if (houseScore > BLACKJACK) {
-
-						if (!msg.sender.send(game.bet * 2)) throw;
+						             
+						if (!msg.sender.send(game.bet * 2)) throw;                            
 						games[msg.sender].state = GameState.Player;
 						return;
 					} else {
@@ -212,13 +230,14 @@ contract BlackJack {
 					houseShortage = BLACKJACK - houseScoreBig;
 				}
 
+                                                                    
 				if (houseShortage == playerShortage) {
-
-					if (!msg.sender.send(game.bet)) throw;
+					      
+					if (!msg.sender.send(game.bet)) throw;                            
 					games[msg.sender].state = GameState.Tie;
 				} else if (houseShortage > playerShortage) {
-
-					if (!msg.sender.send(game.bet * 2)) throw;
+					             
+					if (!msg.sender.send(game.bet * 2)) throw;                            
 					games[msg.sender].state = GameState.Player;
 				} else {
 					games[msg.sender].state = GameState.House;
@@ -229,11 +248,11 @@ contract BlackJack {
 
 	function calculateScore(uint8[] cards) private constant returns (uint8, uint8) {
 		uint8 score = 0;
-		uint8 scoreBig = 0;
+		uint8 scoreBig = 0;                                                    
 		bool bigAceUsed = false;
 		for (uint i = 0; i < cards.length; ++i) {
 			uint8 card = cards[i];
-			if (Deck.isAce(card) && !bigAceUsed) {
+			if (Deck.isAce(card) && !bigAceUsed) {                                                                                  
 				scoreBig += Deck.valueOf(card, true);
 				bigAceUsed = true;
 			} else {
@@ -268,7 +287,7 @@ contract BlackJack {
 
 	function getGameState() public constant returns (uint8) {
 		if (games[msg.sender].player == 0) {
-			throw;
+			throw;                      
 		}
 
 		Game game = games[msg.sender];
@@ -283,7 +302,7 @@ contract BlackJack {
 			return 3;
 		}
 
-		return 0;
+		return 0;                              
 	}
 
 }

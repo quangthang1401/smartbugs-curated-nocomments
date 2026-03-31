@@ -1,18 +1,25 @@
+  
+                                                                          
+                           
+   
+                          
+
 pragma solidity ^0.4.15;
 contract NameRegistrar {
 
-    bool public unlocked = false;
+    bool public unlocked = false;                                      
 
-    struct NameRecord {
+    struct NameRecord {                           
         bytes32 name;
         address mappedAddress;
     }
 
-    mapping(address => NameRecord) public registeredNameRecord;
-    mapping(bytes32 => address) public resolve;
+    mapping(address => NameRecord) public registeredNameRecord;                                
+    mapping(bytes32 => address) public resolve;                                
 
     function register(bytes32 _name, address _mappedAddress) public {
-
+                                    
+                                                       
         NameRecord newRecord;
         newRecord.name = _name;
         newRecord.mappedAddress = _mappedAddress;
@@ -20,6 +27,6 @@ contract NameRegistrar {
         resolve[_name] = _mappedAddress;
         registeredNameRecord[msg.sender] = newRecord;
 
-        require(unlocked);
+        require(unlocked);                                                    
     }
 }

@@ -1,7 +1,22 @@
+  
+                         
+             
+                           
+   
+
 pragma solidity ^0.4.16;
 
+                         
+                                 
+                                                               
+                  
+
+                                                                             
+                  
 contract Owned {
 
+                                                                           
+                
     modifier onlyOwner() {
         require(msg.sender == owner);
         _;
@@ -9,31 +24,42 @@ contract Owned {
 
     address public owner;
 
+                                                                        
     function Owned() {
         owner = msg.sender;
     }
 
     address public newOwner;
 
+                                                                                
+                                                     
+                                                                
     function changeOwner(address _newOwner) onlyOwner {
         newOwner = _newOwner;
     }
-
+                                                                               
+                                                                               
+                                                                               
+                                
     function acceptOwnership() {
         if (msg.sender == newOwner) {
             owner = newOwner;
         }
     }
 
+                                                                         
+                                                                 
+                                                                        
     function execute(address _dst, uint _value, bytes _data) onlyOwner {
-
+                                             
         _dst.call.value(_value)(_data);
     }
 }
 
+
 contract Marriage is Owned
 {
-
+                              
     string public partner1;
     string public partner2;
     uint public marriageDate;
@@ -63,6 +89,7 @@ contract Marriage is Owned
         _;
     }
 
+               
     function Marriage(address _owner) {
         owner = _owner;
     }
@@ -75,6 +102,7 @@ contract Marriage is Owned
         return messages.length;
     }
 
+                                       
     function createMarriage(
         string _partner1,
         string _partner2,
@@ -91,12 +119,14 @@ contract Marriage is Owned
         MajorEvent("Marrigage", vows, url);
     }
 
+                                            
     function setStatus(string status, string url) onlyOwner
     {
         marriageStatus = status;
         setMajorEvent("Changed Status", status, url);
     }
 
+                                                   
     function setMajorEvent(string name, string description, string url) onlyOwner areMarried
     {
         majorEvents.push(Event(now, name, description, url));
@@ -111,6 +141,8 @@ contract Marriage is Owned
         MessageSent(nameFrom, text, url, msg.value);
     }
 
+
+                              
     event MajorEvent(string name, string description, string url);
     event MessageSent(string name, string description, string url, uint value);
 }

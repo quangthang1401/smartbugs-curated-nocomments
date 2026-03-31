@@ -1,3 +1,12 @@
+  
+                                                                     
+                          
+                           
+   
+
+                                      
+                                  
+
 pragma solidity ^0.4.23;
 
 contract IntegerOverflowMultiTxOneFuncFeasible {
@@ -9,7 +18,7 @@ contract IntegerOverflowMultiTxOneFuncFeasible {
             initialized = 1;
             return;
         }
-
+                                    
         count -= input;
     }
 }

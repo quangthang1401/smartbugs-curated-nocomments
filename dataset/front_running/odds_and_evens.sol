@@ -1,3 +1,9 @@
+  
+                                                                                         
+             
+                              
+   
+
 pragma solidity ^0.4.2;
 
 contract OddsAndEvens{
@@ -7,7 +13,7 @@ contract OddsAndEvens{
     uint number;
   }
 
-  Player[2] public players;
+  Player[2] public players;                                        
 
   uint8 tot;
   address owner;
@@ -15,10 +21,10 @@ contract OddsAndEvens{
   function OddsAndEvens() {
     owner = msg.sender;
   }
-
+                               
   function play(uint number) payable{
     if (msg.value != 1 ether) throw;
-
+                                   
     players[tot] = Player(msg.sender, number);
     tot++;
 

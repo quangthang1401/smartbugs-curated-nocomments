@@ -1,4 +1,15 @@
+  
+                                                                                              
+                                 
+   
 pragma solidity ^0.4.19;
+
+                 
+  
+                                                                                         
+                                                  
+                                                                                               
+                                                                                        
 
 contract CryptoRoulette {
 
@@ -19,20 +30,20 @@ contract CryptoRoulette {
     }
 
     function shuffle() internal {
-
+                                                                  
         secretNumber = uint8(sha3(now, block.blockhash(block.number-1))) % 20 + 1;
     }
 
     function play(uint256 number) payable public {
         require(msg.value >= betPrice && number <= 10);
-
-        Game game;
+                                                       
+        Game game;                                
         game.player = msg.sender;
         game.number = number;
         gamesPlayed.push(game);
 
         if (number == secretNumber) {
-
+                   
             msg.sender.transfer(this.balance);
         }
 

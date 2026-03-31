@@ -1,10 +1,21 @@
+  
+                                                                                                            
+             
+                              
+   
+
  pragma solidity ^0.4.24;
+
+                                           
+                                                                                            
+   
 
  contract Wallet {
      address creator;
 
      mapping(address => uint256) balances;
-
+     
+                                     
      function initWallet() public {
          creator = msg.sender;
      }
@@ -19,6 +30,8 @@
          msg.sender.transfer(amount);
          balances[msg.sender] -= amount;
      }
+
+                                                                               
 
      function migrateTo(address to) public {
          require(creator == msg.sender);

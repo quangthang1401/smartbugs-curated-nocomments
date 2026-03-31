@@ -1,29 +1,53 @@
-pragma solidity 0.4.9;
+  
+                                                                                                                                                          
+                  
+                                
+   
+
+            
+                                                 
+            
+                          
+                                                                                                                 
+                                                                 
+         
+                                                                                                              
+                                                                                                                    
+                        
+
+pragma solidity 0.4.9;                                                          
 
 contract WalletEvents {
+           
 
+                                                                                            
+                                                       
   event Confirmation(address owner, bytes32 operation);
   event Revoke(address owner, bytes32 operation);
 
+                                                      
   event OwnerChanged(address oldOwner, address newOwner);
   event OwnerAdded(address newOwner);
   event OwnerRemoved(address oldOwner);
 
+                                                              
   event RequirementChanged(uint newRequirement);
 
+                                                         
   event Deposit(address _from, uint value);
-
+                                                                                                             
   event SingleTransact(address owner, uint value, address to, bytes data, address created);
-
+                                                                                                                                         
   event MultiTransact(address owner, bytes32 operation, uint value, address to, bytes data, address created);
-
+                                                 
   event ConfirmationNeeded(bytes32 operation, address initiator, uint value, address to, bytes data);
 }
 
 contract WalletAbi {
-
+                                                        
   function revoke(bytes32 _operation) external;
 
+                                                  
   function changeOwner(address _from, address _to) external;
 
   function addOwner(address _owner) external;
@@ -36,6 +60,7 @@ contract WalletAbi {
 
   function hasConfirmed(bytes32 _operation, address _owner) external constant returns (bool);
 
+                                                                                                                 
   function setDailyLimit(uint _newLimit) external;
 
   function execute(address _to, uint _value, bytes _data) external returns (bytes32 o_hash);
@@ -43,35 +68,48 @@ contract WalletAbi {
 }
 
 contract WalletLibrary is WalletEvents {
+          
 
+                                                  
   struct PendingState {
     uint yetNeeded;
     uint ownersDone;
     uint index;
   }
 
+                                                                                                     
   struct Transaction {
     address to;
     uint value;
     bytes data;
   }
 
+              
+
+                                         
   modifier onlyowner {
     if (isOwner(msg.sender))
       _;
   }
-
+                                                                                    
+                                                                             
+                                 
   modifier onlymanyowners(bytes32 _operation) {
     if (confirmAndCheck(_operation))
       _;
   }
 
-  function() payable {
+            
 
+                                               
+  function() payable {
+                                 
     if (msg.value > 0)
       Deposit(msg.sender, msg.value);
   }
 
+                                                                                               
+                                                                      
   function initMultiowned(address[] _owners, uint _required) {
     m_numOwners = _owners.length + 1;
     m_owners[1] = uint(msg.sender);
@@ -84,9 +122,10 @@ contract WalletLibrary is WalletEvents {
     m_required = _required;
   }
 
+                                                        
   function revoke(bytes32 _operation) external {
     uint ownerIndex = m_ownerIndex[uint(msg.sender)];
-
+                                 
     if (ownerIndex == 0) return;
     uint ownerIndexBit = 2**ownerIndex;
     var pending = m_pending[_operation];
@@ -97,6 +136,7 @@ contract WalletLibrary is WalletEvents {
     }
   }
 
+                                                  
   function changeOwner(address _from, address _to) onlymanyowners(sha3(msg.data)) external {
     if (isOwner(_to)) return;
     uint ownerIndex = m_ownerIndex[uint(_from)];
@@ -131,7 +171,7 @@ contract WalletLibrary is WalletEvents {
     m_owners[ownerIndex] = 0;
     m_ownerIndex[uint(_owner)] = 0;
     clearPending();
-    reorganizeOwners();
+    reorganizeOwners();                                                                                                   
     OwnerRemoved(_owner);
   }
 
@@ -142,6 +182,7 @@ contract WalletLibrary is WalletEvents {
     RequirementChanged(_newRequired);
   }
 
+                                                                       
   function getOwner(uint ownerIndex) external constant returns (address) {
     return address(m_owners[ownerIndex + 1]);
   }
@@ -154,38 +195,49 @@ contract WalletLibrary is WalletEvents {
     var pending = m_pending[_operation];
     uint ownerIndex = m_ownerIndex[uint(_owner)];
 
+                                 
     if (ownerIndex == 0) return false;
 
+                                               
     uint ownerIndexBit = 2**ownerIndex;
     return !(pending.ownersDone & ownerIndexBit == 0);
   }
 
+                                                                                  
   function initDaylimit(uint _limit) {
     m_dailyLimit = _limit;
     m_lastDay = today();
   }
-
+                                                                                                                 
   function setDailyLimit(uint _newLimit) onlymanyowners(sha3(msg.data)) external {
     m_dailyLimit = _newLimit;
   }
-
+                                                                                
   function resetSpentToday() onlymanyowners(sha3(msg.data)) external {
     m_spentToday = 0;
   }
 
+                                                                     
+                          
+                                  
   function initWallet(address[] _owners, uint _required, uint _daylimit) {
     initDaylimit(_daylimit);
     initMultiowned(_owners, _required);
   }
 
+                                                    
   function kill(address _to) onlymanyowners(sha3(msg.data)) external {
     suicide(_to);
   }
 
+                                                                                                       
+                                                                                                   
+                                                                                              
+                                                                                         
   function execute(address _to, uint _value, bytes _data) external onlyowner returns (bytes32 o_hash) {
-
+                                                                             
     if ((_data.length == 0 && underLimit(_value)) || m_required == 1) {
-
+                                     
       address created;
       if (_to == 0) {
         created = create(_value, _data);
@@ -195,9 +247,9 @@ contract WalletLibrary is WalletEvents {
       }
       SingleTransact(msg.sender, _value, _to, _data, created);
     } else {
-
+                                      
       o_hash = sha3(msg.data, block.number);
-
+                          
       if (m_txs[o_hash].to == 0 && m_txs[o_hash].value == 0 && m_txs[o_hash].data.length == 0) {
         m_txs[o_hash].to = _to;
         m_txs[o_hash].value = _value;
@@ -216,6 +268,8 @@ contract WalletLibrary is WalletEvents {
     }
   }
 
+                                                                                                       
+                                                                     
   function confirm(bytes32 _h) onlymanyowners(_h) returns (bool o_success) {
     if (m_txs[_h].to != 0 || m_txs[_h].value != 0 || m_txs[_h].data.length != 0) {
       address created;
@@ -232,37 +286,39 @@ contract WalletLibrary is WalletEvents {
     }
   }
 
+                     
+
   function confirmAndCheck(bytes32 _operation) internal returns (bool) {
-
+                                                  
     uint ownerIndex = m_ownerIndex[uint(msg.sender)];
-
+                                 
     if (ownerIndex == 0) return;
 
     var pending = m_pending[_operation];
-
+                                                                                                 
     if (pending.yetNeeded == 0) {
-
+                                             
       pending.yetNeeded = m_required;
-
+                                                                        
       pending.ownersDone = 0;
       pending.index = m_pendingIndex.length++;
       m_pendingIndex[pending.index] = _operation;
     }
-
+                                               
     uint ownerIndexBit = 2**ownerIndex;
-
+                                                                                     
     if (pending.ownersDone & ownerIndexBit == 0) {
       Confirmation(msg.sender, _operation);
-
+                                                   
       if (pending.yetNeeded <= 1) {
-
+                                                        
         delete m_pendingIndex[m_pending[_operation].index];
         delete m_pending[_operation];
         return true;
       }
       else
       {
-
+                                                                      
         pending.yetNeeded--;
         pending.ownersDone |= ownerIndexBit;
       }
@@ -284,13 +340,16 @@ contract WalletLibrary is WalletEvents {
     }
   }
 
+                                                                                                               
+                                                
   function underLimit(uint _value) internal onlyowner returns (bool) {
-
+                                                                      
     if (today() > m_lastDay) {
       m_spentToday = 0;
       m_lastDay = today();
     }
-
+                                                                             
+                                                                 
     if (m_spentToday + _value >= m_spentToday && m_spentToday + _value <= m_dailyLimit) {
       m_spentToday += _value;
       return true;
@@ -298,6 +357,7 @@ contract WalletLibrary is WalletEvents {
     return false;
   }
 
+                              
   function today() private constant returns (uint) { return now / 1 days; }
 
   function clearPending() internal {
@@ -313,60 +373,76 @@ contract WalletLibrary is WalletEvents {
     delete m_pendingIndex;
   }
 
+           
   address constant _walletLibrary = 0xcafecafecafecafecafecafecafecafecafecafe;
 
+                                                                                
   uint public m_required;
-
+                                                 
   uint public m_numOwners;
 
   uint public m_dailyLimit;
   uint public m_spentToday;
   uint public m_lastDay;
 
+                   
   uint[256] m_owners;
 
   uint constant c_maxOwners = 250;
-
+                                                        
   mapping(uint => uint) m_ownerIndex;
-
+                            
   mapping(bytes32 => PendingState) m_pending;
   bytes32[] m_pendingIndex;
 
+                                             
   mapping (bytes32 => Transaction) m_txs;
 }
 
 contract Wallet is WalletEvents {
 
+                       
+                                                                   
   function Wallet(address[] _owners, uint _required, uint _daylimit) {
-
+                                                      
     bytes4 sig = bytes4(sha3("initWallet(address[],uint256,uint256)"));
     address target = _walletLibrary;
 
+                                                       
+                                                                
+                                   
     uint argarraysize = (2 + _owners.length);
     uint argsize = (2 + argarraysize) * 32;
 
     assembly {
-
+                                          
       mstore(0x0, sig)
-
+                                                      
+             
       codecopy(0x4,  sub(codesize, argsize), argsize)
-
+                                     
       delegatecall(sub(gas, 10000), target, 0x0, add(argsize, 0x4), 0x0, 0x0)
     }
   }
 
-  function() payable {
+            
 
+                                               
+  function() payable {
+                                 
     if (msg.value > 0)
       Deposit(msg.sender, msg.value);
     else if (msg.data.length > 0)
-
-      _walletLibrary.delegatecall(msg.data);
+                                     
+      _walletLibrary.delegatecall(msg.data);                                                                               
   }
 
+                                                                       
   function getOwner(uint ownerIndex) constant returns (address) {
     return address(m_owners[ownerIndex + 1]);
   }
+
+                                                                          
 
   function hasConfirmed(bytes32 _operation, address _owner) external constant returns (bool) {
     return _walletLibrary.delegatecall(msg.data);
@@ -376,15 +452,18 @@ contract Wallet is WalletEvents {
     return _walletLibrary.delegatecall(msg.data);
   }
 
+           
   address constant _walletLibrary = 0xcafecafecafecafecafecafecafecafecafecafe;
 
+                                                                                
   uint public m_required;
-
+                                                 
   uint public m_numOwners;
 
   uint public m_dailyLimit;
   uint public m_spentToday;
   uint public m_lastDay;
 
+                   
   uint[256] m_owners;
 }

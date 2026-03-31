@@ -1,36 +1,75 @@
+  
+                                                                                                             
+             
+                                        
+   
+
+                                                                                
+                                                                                    
+                                             
+          
+                                                                                 
+
+                                                                                      
+                                              
+                                                                                
+
+                                              
+                                                                                      
+                             
+                                                          
+                                                       
+
+                      
 pragma solidity ^0.4.0;
 
 contract KingOfTheEtherThrone {
 
     struct Monarch {
-
+                                                            
         address etherAddress;
-
+                                                 
+                                                                        
         string name;
-
+                                                   
         uint claimPrice;
-
+                                                                
         uint coronationTimestamp;
     }
 
+                                                             
+                                                                    
     address wizardAddress;
 
+                                                         
     modifier onlywizard { if (msg.sender == wizardAddress) _; }
 
+                                           
     uint constant startingClaimPrice = 100 finney;
 
+                                                                   
+                                                                              
+                                                               
     uint constant claimPriceAdjustNum = 3;
     uint constant claimPriceAdjustDen = 2;
 
+                                                                              
+                                                                            
+                                                    
     uint constant wizardCommissionFractionNum = 1;
     uint constant wizardCommissionFractionDen = 100;
 
+                                                            
     uint public currentClaimPrice;
 
+                                        
     Monarch public currentMonarch;
 
+                                                      
     Monarch[] public pastMonarchs;
 
+                                                                       
+                                                
     function KingOfTheEtherThrone() {
         wizardAddress = msg.sender;
         currentClaimPrice = startingClaimPrice;
@@ -46,44 +85,56 @@ contract KingOfTheEtherThrone {
         return pastMonarchs.length;
     }
 
+                                        
+                                                       
     event ThroneClaimed(
         address usurperEtherAddress,
         string usurperName,
         uint newClaimPrice
     );
 
+                                                            
+                                                     
     function() {
         claimThrone(string(msg.data));
     }
 
+                                                                         
     function claimThrone(string name) {
 
         uint valuePaid = msg.value;
 
+                                                                        
         if (valuePaid < currentClaimPrice) {
-
+                                                
             msg.sender.send(valuePaid);
             return;
         }
 
+                                                                            
         if (valuePaid > currentClaimPrice) {
             uint excessPaid = valuePaid - currentClaimPrice;
-
+                                                
             msg.sender.send(excessPaid);
             valuePaid = valuePaid - excessPaid;
         }
+
+                                                                              
+                                                                            
+                                                                       
 
         uint wizardCommission = (valuePaid * wizardCommissionFractionNum) / wizardCommissionFractionDen;
 
         uint compensation = valuePaid - wizardCommission;
 
         if (currentMonarch.etherAddress != wizardAddress) {
-
+                                                
             currentMonarch.etherAddress.send(compensation);
         } else {
-
+                                                                             
         }
 
+                                                                      
         pastMonarchs.push(currentMonarch);
         currentMonarch = Monarch(
             msg.sender,
@@ -92,6 +143,8 @@ contract KingOfTheEtherThrone {
             block.timestamp
         );
 
+                                                
+                                                                              
         uint rawNewClaimPrice = currentClaimPrice * claimPriceAdjustNum / claimPriceAdjustDen;
         if (rawNewClaimPrice < 10 finney) {
             currentClaimPrice = rawNewClaimPrice;
@@ -111,14 +164,17 @@ contract KingOfTheEtherThrone {
             currentClaimPrice = rawNewClaimPrice;
         }
 
+                                
         ThroneClaimed(currentMonarch.etherAddress, currentMonarch.name, currentClaimPrice);
     }
 
+                                                         
     function sweepCommission(uint amount) onlywizard {
-
+                                            
         wizardAddress.send(amount);
     }
 
+                                                         
     function transferOwnership(address newOwner) onlywizard {
         wizardAddress = newOwner;
     }

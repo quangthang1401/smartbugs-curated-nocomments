@@ -1,3 +1,9 @@
+  
+                                                                     
+                          
+                           
+   
+
 pragma solidity ^0.4.19;
 
 contract ReentrancyDAO {
@@ -8,7 +14,7 @@ contract ReentrancyDAO {
         uint oCredit = credit[msg.sender];
         if (oCredit > 0) {
             balance -= oCredit;
-
+                                        
             bool callResult = msg.sender.call.value(oCredit)();
             require (callResult);
             credit[msg.sender] = 0;

@@ -1,3 +1,10 @@
+  
+                                                                                                                     
+             
+                              
+   
+
+
 pragma solidity ^0.4.25;
 
 contract DosOneFunc {
@@ -6,7 +13,7 @@ contract DosOneFunc {
 
     function ifillArray() public returns (bool){
         if(listAddresses.length<1500) {
-
+                                               
             for(uint i=0;i<350;i++) {
                 listAddresses.push(msg.sender);
             }

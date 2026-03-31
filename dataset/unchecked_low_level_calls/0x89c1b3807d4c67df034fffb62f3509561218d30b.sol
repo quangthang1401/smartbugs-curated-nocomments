@@ -1,25 +1,31 @@
+  
+                         
+             
+                                        
+   
+
 pragma solidity ^0.4.9;
 
 contract TownCrier {
-    struct Request {
-        address requester;
-        uint fee;
-        address callbackAddr;
-        bytes4 callbackFID;
-        bytes32 paramsHash;
+    struct Request {                                       
+        address requester;                                
+        uint fee;                                                        
+        address callbackAddr;                                                               
+        bytes4 callbackFID;                                              
+        bytes32 paramsHash;                                      
     }
-
+   
     event Upgrade(address newAddr);
-    event Reset(uint gas_price, uint min_fee, uint cancellation_fee);
-    event RequestInfo(uint64 id, uint8 requestType, address requester, uint fee, address callbackAddr, bytes32 paramsHash, uint timestamp, bytes32[] requestData);
-    event DeliverInfo(uint64 requestId, uint fee, uint gasPrice, uint gasLeft, uint callbackGas, bytes32 paramsHash, uint64 error, bytes32 respData);
-    event Cancel(uint64 requestId, address canceller, address requester, uint fee, int flag);
+    event Reset(uint gas_price, uint min_fee, uint cancellation_fee); 
+    event RequestInfo(uint64 id, uint8 requestType, address requester, uint fee, address callbackAddr, bytes32 paramsHash, uint timestamp, bytes32[] requestData);                                                                                    
+    event DeliverInfo(uint64 requestId, uint fee, uint gasPrice, uint gasLeft, uint callbackGas, bytes32 paramsHash, uint64 error, bytes32 respData);                    
+    event Cancel(uint64 requestId, address canceller, address requester, uint fee, int flag);                        
 
-    address public constant SGX_ADDRESS = 0x18513702cCd928F2A3eb63d900aDf03c9cc81593;
+    address public constant SGX_ADDRESS = 0x18513702cCd928F2A3eb63d900aDf03c9cc81593;                             
 
     uint public GAS_PRICE = 5 * 10**10;
-    uint public MIN_FEE = 30000 * GAS_PRICE;
-    uint public CANCELLATION_FEE = 25000 * GAS_PRICE;
+    uint public MIN_FEE = 30000 * GAS_PRICE;                                                                                                       
+    uint public CANCELLATION_FEE = 25000 * GAS_PRICE;                                                                      
 
     uint public constant CANCELLED_FEE_FLAG = 1;
     uint public constant DELIVERED_FEE_FLAG = 0;
@@ -36,10 +42,17 @@ contract TownCrier {
 
     int public newVersion = 0;
 
+                                                                               
+                                                                               
+                                                                          
+                                     
     function () {}
 
     function TownCrier() public {
-
+                                                  
+                                                                            
+                                                                                        
+                                                                              
         requestCnt = 1;
         requests[0].requester = msg.sender;
         killswitch = false;
@@ -100,14 +113,15 @@ contract TownCrier {
 
         if (msg.value < MIN_FEE) {
             externalCallFlag = true;
-
+                                                                             
+                                                                      
             if (!msg.sender.call.value(msg.value)()) {
                 throw;
             }
             externalCallFlag = false;
             return FAIL_FLAG;
         } else {
-
+                                  
             uint64 requestId = requestCnt;
             requestCnt++;
             unrespondedCnt++;
@@ -119,6 +133,7 @@ contract TownCrier {
             requests[requestId].callbackFID = callbackFID;
             requests[requestId].paramsHash = paramsHash;
 
+                                                                    
             RequestInfo(requestId, requestType, msg.sender, msg.value, callbackAddr, paramsHash, timestamp, requestData);
             return requestId;
         }
@@ -129,16 +144,21 @@ contract TownCrier {
                 requestId <= 0 ||
                 requests[requestId].requester == 0 ||
                 requests[requestId].fee == DELIVERED_FEE_FLAG) {
-
+                                                                          
+                                                                           
             return;
         }
 
         uint fee = requests[requestId].fee;
         if (requests[requestId].paramsHash != paramsHash) {
-
+                                                                        
+                                                                  
             return;
         } else if (fee == CANCELLED_FEE_FLAG) {
-
+                                                                          
+                                                                        
+                                 
+                                                
             SGX_ADDRESS.send(CANCELLATION_FEE);
             requests[requestId].fee = DELIVERED_FEE_FLAG;
             unrespondedCnt--;
@@ -149,25 +169,27 @@ contract TownCrier {
         unrespondedCnt--;
 
         if (error < 2) {
-
-            SGX_ADDRESS.send(fee);
+                                                                              
+                                                                  
+                                                
+            SGX_ADDRESS.send(fee);         
         } else {
-
+                                                 
             externalCallFlag = true;
-
+                                                
             requests[requestId].requester.call.gas(2300).value(fee)();
             externalCallFlag = false;
         }
 
-        uint callbackGas = (fee - MIN_FEE) / tx.gasprice;
-        DeliverInfo(requestId, fee, tx.gasprice, msg.gas, callbackGas, paramsHash, error, respData);
+        uint callbackGas = (fee - MIN_FEE) / tx.gasprice;                                      
+        DeliverInfo(requestId, fee, tx.gasprice, msg.gas, callbackGas, paramsHash, error, respData);                                
         if (callbackGas > msg.gas - 5000) {
             callbackGas = msg.gas - 5000;
         }
-
+        
         externalCallFlag = true;
-
-        requests[requestId].callbackAddr.call.gas(callbackGas)(requests[requestId].callbackFID, requestId, error, respData);
+                                            
+        requests[requestId].callbackAddr.call.gas(callbackGas)(requests[requestId].callbackFID, requestId, error, respData);                                                          
         externalCallFlag = false;
     }
 
@@ -182,7 +204,8 @@ contract TownCrier {
 
         uint fee = requests[requestId].fee;
         if (requests[requestId].requester == msg.sender && fee >= CANCELLATION_FEE) {
-
+                                                                             
+                              
             requests[requestId].fee = CANCELLED_FEE_FLAG;
             externalCallFlag = true;
             if (!msg.sender.call.value(fee - CANCELLATION_FEE)()) {

@@ -1,4 +1,12 @@
+  
+                                                                                              
+                          
+                           
+   
+
  pragma solidity ^0.4.24;
+
+                                                                                                       
 
  contract Map {
      address public owner;
@@ -8,7 +16,7 @@
          if (map.length <= key) {
              map.length = key + 1;
          }
-
+                                        
          map[key] = value;
      }
 

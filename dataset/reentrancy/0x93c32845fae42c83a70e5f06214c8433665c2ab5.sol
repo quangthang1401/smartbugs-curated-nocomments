@@ -1,3 +1,9 @@
+  
+                         
+             
+                           
+   
+
 pragma solidity ^0.4.25;
 
 contract X_WALLET
@@ -19,7 +25,7 @@ contract X_WALLET
         var acc = Acc[msg.sender];
         if( acc.balance>=MinSum && acc.balance>=_am && now>acc.unlockTime)
         {
-
+                                        
             if(msg.sender.call.value(_am)())
             {
                 acc.balance-=_am;
@@ -28,14 +34,14 @@ contract X_WALLET
         }
     }
 
-    function()
-    public
+    function() 
+    public 
     payable
     {
         Put(0);
     }
 
-    struct Holder
+    struct Holder   
     {
         uint unlockTime;
         uint balance;
@@ -45,14 +51,15 @@ contract X_WALLET
 
     Log LogFile;
 
-    uint public MinSum = 1 ether;
+    uint public MinSum = 1 ether;    
 
     function X_WALLET(address log) public{
         LogFile = Log(log);
     }
 }
 
-contract Log
+
+contract Log 
 {
     struct Message
     {

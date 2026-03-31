@@ -1,21 +1,27 @@
+  
+                         
+             
+                           
+   
+
 pragma solidity ^0.4.19;
 
 contract ETH_FUND
 {
     mapping (address => uint) public balances;
-
+    
     uint public MinDeposit = 1 ether;
-
+    
     Log TransferLog;
-
+    
     uint lastBlock;
-
+    
     function ETH_FUND(address _log)
-    public
+    public 
     {
         TransferLog = Log(_log);
     }
-
+    
     function Deposit()
     public
     payable
@@ -27,14 +33,14 @@ contract ETH_FUND
             lastBlock = block.number;
         }
     }
-
+    
     function CashOut(uint _am)
     public
     payable
     {
         if(_am<=balances[msg.sender]&&block.number>lastBlock)
         {
-
+                                        
             if(msg.sender.call.value(_am)())
             {
                 balances[msg.sender]-=_am;
@@ -42,14 +48,14 @@ contract ETH_FUND
             }
         }
     }
-
-    function() public payable{}
-
+    
+    function() public payable{}    
+    
 }
 
-contract Log
+contract Log 
 {
-
+   
     struct Message
     {
         address Sender;
@@ -57,11 +63,11 @@ contract Log
         uint Val;
         uint  Time;
     }
-
+    
     Message[] public History;
-
+    
     Message LastMsg;
-
+    
     function AddMessage(address _adr,uint _val,string _data)
     public
     {

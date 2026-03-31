@@ -1,3 +1,9 @@
+  
+                                                                                                                  
+             
+                           
+   
+
  pragma solidity ^0.4.15;
 
  contract Unprotected{
@@ -14,10 +20,20 @@
          owner = msg.sender;
      }
 
+                                         
+                                     
      function changeOwner(address _newOwner)
          public
      {
         owner = _newOwner;
      }
 
+      
+                                                 
+               
+                  
+      
+                          
+      
+       
  }

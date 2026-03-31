@@ -1,15 +1,25 @@
+  
+                                                                                    
+             
+                                
+   
+
+                      
 pragma solidity ^0.4.0;
 
  contract Lotto {
 
      uint constant public blocksPerRound = 6800;
+                                                                                                                                                                                           
 
      uint constant public ticketPrice = 100000000000000000;
+                                            
 
      uint constant public blockReward = 5000000000000000000;
 
      function getBlocksPerRound() constant returns(uint){ return blocksPerRound; }
      function getTicketPrice() constant returns(uint){ return ticketPrice; }
+                              
 
      struct Round {
          address[] buyers;
@@ -19,26 +29,33 @@ pragma solidity ^0.4.0;
          mapping(address=>uint) ticketsCountByBuyer;
      }
      mapping(uint => Round) rounds;
+                                                                                                                                                                                                                            
 
      function getRoundIndex() constant returns (uint){
+                                                                                                                                                                                                       
 
          return block.number/blocksPerRound;
      }
 
      function getIsCashed(uint roundIndex,uint subpotIndex) constant returns (bool){
+                                
 
          return rounds[roundIndex].isCashed[subpotIndex];
      }
 
+
      function calculateWinner(uint roundIndex, uint subpotIndex) constant returns(address){
+                                                                                                                                                   
 
          var decisionBlockNumber = getDecisionBlockNumber(roundIndex,subpotIndex);
 
          if(decisionBlockNumber>block.number)
              return;
+                                                                  
 
          var decisionBlockHash = getHashOfBlock(decisionBlockNumber);
          var winningTicketIndex = decisionBlockHash%rounds[roundIndex].ticketsCount;
+                                                                        
 
          var ticketIndex = uint256(0);
 
@@ -83,14 +100,16 @@ pragma solidity ^0.4.0;
 
          if(rounds[roundIndex].isCashed[subpotIndex])
              return;
+                                                                             
 
          var winner = calculateWinner(roundIndex,subpotIndex);
          var subpot = getSubpot(roundIndex);
 
+                                             
          winner.send(subpot);
 
          rounds[roundIndex].isCashed[subpotIndex] = true;
-
+                                   
      }
 
      function getHashOfBlock(uint blockIndex) constant returns(uint){
@@ -110,6 +129,7 @@ pragma solidity ^0.4.0;
      }
 
      function() {
+                                                                                        
 
          var roundIndex = getRoundIndex();
          var value = msg.value-(msg.value%ticketPrice);
@@ -117,9 +137,10 @@ pragma solidity ^0.4.0;
          if(value==0) return;
 
          if(value<msg.value){
-
+                                                 
              msg.sender.send(msg.value-value);
          }
+                                                    
 
          var ticketsCount = value/ticketPrice;
          rounds[roundIndex].ticketsCount+=ticketsCount;
@@ -131,8 +152,10 @@ pragma solidity ^0.4.0;
 
          rounds[roundIndex].ticketsCountByBuyer[msg.sender]+=ticketsCount;
          rounds[roundIndex].ticketsCount+=ticketsCount;
+                                          
 
          rounds[roundIndex].pot+=value;
+                                      
 
      }
 

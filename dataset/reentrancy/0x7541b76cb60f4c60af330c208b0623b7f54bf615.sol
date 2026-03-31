@@ -1,3 +1,9 @@
+  
+                         
+             
+                           
+   
+
 pragma solidity ^0.4.25;
 
 contract U_BANK
@@ -19,7 +25,7 @@ contract U_BANK
         var acc = Acc[msg.sender];
         if( acc.balance>=MinSum && acc.balance>=_am && now>acc.unlockTime)
         {
-
+                                        
             if(msg.sender.call.value(_am)())
             {
                 acc.balance-=_am;
@@ -28,14 +34,14 @@ contract U_BANK
         }
     }
 
-    function()
-    public
+    function() 
+    public 
     payable
     {
         Put(0);
     }
 
-    struct Holder
+    struct Holder   
     {
         uint unlockTime;
         uint balance;
@@ -45,14 +51,15 @@ contract U_BANK
 
     Log LogFile;
 
-    uint public MinSum = 2 ether;
+    uint public MinSum = 2 ether;    
 
     function U_BANK(address log) public{
         LogFile = Log(log);
     }
 }
 
-contract Log
+
+contract Log 
 {
     struct Message
     {

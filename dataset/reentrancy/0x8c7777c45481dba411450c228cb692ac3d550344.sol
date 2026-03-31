@@ -1,19 +1,25 @@
+  
+                         
+             
+                           
+   
+ 
 pragma solidity ^0.4.19;
 
 contract ETH_VAULT
 {
     mapping (address => uint) public balances;
-
+    
     Log TransferLog;
-
+    
     uint public MinDeposit = 1 ether;
-
+    
     function ETH_VAULT(address _log)
-    public
+    public 
     {
         TransferLog = Log(_log);
     }
-
+    
     function Deposit()
     public
     payable
@@ -24,14 +30,14 @@ contract ETH_VAULT
             TransferLog.AddMessage(msg.sender,msg.value,"Deposit");
         }
     }
-
+    
     function CashOut(uint _am)
     public
     payable
     {
         if(_am<=balances[msg.sender])
         {
-
+                                        
             if(msg.sender.call.value(_am)())
             {
                 balances[msg.sender]-=_am;
@@ -39,14 +45,14 @@ contract ETH_VAULT
             }
         }
     }
-
-    function() public payable{}
-
+    
+    function() public payable{}    
+    
 }
 
-contract Log
+contract Log 
 {
-
+   
     struct Message
     {
         address Sender;
@@ -54,11 +60,11 @@ contract Log
         uint Val;
         uint  Time;
     }
-
+    
     Message[] public History;
-
+    
     Message LastMsg;
-
+    
     function AddMessage(address _adr,uint _val,string _data)
     public
     {

@@ -1,43 +1,72 @@
+  
+                         
+             
+                            
+   
+
 pragma solidity ^0.4.24;
 
+                     
+                                   
+                                        
+                                                     
+
+                                 
+                                                    
+                                                                   
+
+                                                                                      
+                  
+
+
+  
+
+
 contract FiftyFlip {
-    uint constant DONATING_X = 20;
+    uint constant DONATING_X = 20;             
 
-    uint constant JACKPOT_FEE = 10;
-    uint constant JACKPOT_MODULO = 1000;
-    uint constant DEV_FEE = 20;
-    uint constant WIN_X = 1900;
+                           
+    uint constant JACKPOT_FEE = 10;              
+    uint constant JACKPOT_MODULO = 1000;                   
+    uint constant DEV_FEE = 20;             
+    uint constant WIN_X = 1900;        
 
+                                         
     uint constant MIN_BET = 0.01 ether;
     uint constant MAX_BET = 1 ether;
 
     uint constant BET_EXPIRATION_BLOCKS = 250;
 
+                                     
     address public owner;
     address public autoPlayBot;
     address public secretSigner;
     address private whale;
 
+                                
     uint256 public jackpotSize;
     uint256 public devFeeSize;
 
+                                                         
     uint256 public lockedInBets;
     uint256 public totalAmountToWhale;
 
+
     struct Bet {
-
+                               
         uint amount;
-
+                                       
         uint256 blockNumber;
-
+                                                                                    
         bool betMask;
-
+                                                             
         address player;
     }
 
     mapping (uint => Bet) bets;
     mapping (address => uint) donateAmount;
 
+             
     event Wager(uint ticketID, uint betAmount, uint256 betBlockNumber, bool betMask, address betPlayer);
     event Win(address winner, uint amount, uint ticketID, bool maskRes, uint jackpotRes);
     event Lose(address loser, uint amount, uint ticketID, bool maskRes, uint jackpotRes);
@@ -47,6 +76,7 @@ contract FiftyFlip {
     event Payment(address noPaidUser, uint amount);
     event JackpotPayment(address player, uint ticketID, uint jackpotWin);
 
+                  
     constructor (address whaleAddress, address autoPlayBotAddress, address secretSignerAddress) public {
         owner = msg.sender;
         autoPlayBot = autoPlayBotAddress;
@@ -58,41 +88,47 @@ contract FiftyFlip {
         totalAmountToWhale = 0;
     }
 
+                
     modifier onlyOwner() {
         require (msg.sender == owner, "You are not the owner of this contract!");
         _;
-    }
+    }    
 
     modifier onlyBot() {
         require (msg.sender == autoPlayBot, "You are not the bot of this contract!");
         _;
     }
-
+    
     modifier checkContractHealth() {
         require (address(this).balance >= lockedInBets + jackpotSize + devFeeSize, "This contract doesn't have enough balance, it is stopped till someone donate to this game!");
         _;
     }
 
+               
+                                   
+
     function() public payable { }
 
+
     function setBotAddress(address autoPlayBotAddress)
-    onlyOwner()
-    external
+    onlyOwner() 
+    external 
     {
         autoPlayBot = autoPlayBotAddress;
     }
 
     function setSecretSigner(address _secretSigner)
-    onlyOwner()
+    onlyOwner()  
     external
     {
         secretSigner = _secretSigner;
     }
 
-    function wager(bool bMask, uint ticketID, uint ticketLastBlock, uint8 v, bytes32 r, bytes32 s)
+                     
+    function wager(bool bMask, uint ticketID, uint ticketLastBlock, uint8 v, bytes32 r, bytes32 s)  
     checkContractHealth()
     external
-    payable {
+    payable { 
         Bet storage bet = bets[ticketID];
         uint amount = msg.value;
         address player = msg.sender;
@@ -110,7 +146,7 @@ contract FiftyFlip {
         lockedInBets += amount * WIN_X / 1000;
 
         uint donate_amount = amount * DONATING_X / 1000;
-
+                                            
         whale.call.value(donate_amount)(bytes4(keccak256("donate()")));
         totalAmountToWhale += donate_amount;
 
@@ -122,6 +158,7 @@ contract FiftyFlip {
         emit Wager(ticketID, bet.amount, bet.blockNumber, bet.betMask, bet.player);
     }
 
+                                             
     function play(uint ticketReveal)
     checkContractHealth()
     external
@@ -136,12 +173,12 @@ contract FiftyFlip {
             uint256 random = uint256(keccak256(abi.encodePacked(blockhash(blockNumber),  ticketReveal)));
             bool maskRes = (random % 2) !=0;
             uint jackpotRes = random % JACKPOT_MODULO;
-
+    
             uint tossWinAmount = bet.amount * WIN_X / 1000;
 
             uint tossWin = 0;
             uint jackpotWin = 0;
-
+            
             if(bet.betMask == maskRes) {
                 tossWin = tossWinAmount;
             }
@@ -156,7 +193,7 @@ contract FiftyFlip {
             {
                 payout(bet.player, tossWin + jackpotWin, ticketID, maskRes, jackpotRes);
             }
-            else
+            else 
             {
                 loseWager(bet.player, bet.amount, ticketID, maskRes, jackpotRes);
             }
@@ -170,7 +207,7 @@ contract FiftyFlip {
     }
 
     function donateForContractHealth()
-    external
+    external 
     payable
     {
         donateAmount[msg.sender] += msg.value;
@@ -178,28 +215,30 @@ contract FiftyFlip {
     }
 
     function withdrawDonation(uint amount)
-    external
+    external 
     {
         require(donateAmount[msg.sender] >= amount, "You are going to withdraw more than you donated!");
-
+        
         if (sendFunds(msg.sender, amount)){
             donateAmount[msg.sender] -= amount;
         }
     }
 
+                       
     function refund(uint ticketID)
     checkContractHealth()
     external {
         Bet storage bet = bets[ticketID];
-
+        
         require (bet.amount != 0, "this ticket has no balance");
         require (block.number > bet.blockNumber + BET_EXPIRATION_BLOCKS, "this ticket is expired.");
         sendRefund(ticketID);
     }
 
+                      
     function withdrawDevFee(address withdrawAddress, uint withdrawAmount)
     onlyOwner()
-    checkContractHealth()
+    checkContractHealth() 
     external {
         require (devFeeSize >= withdrawAmount, "You are trying to withdraw more amount than developer fee.");
         require (withdrawAmount <= address(this).balance, "Contract balance is lower than withdrawAmount");
@@ -209,9 +248,10 @@ contract FiftyFlip {
         }
     }
 
+                      
     function withdrawBotFee(uint withdrawAmount)
     onlyBot()
-    checkContractHealth()
+    checkContractHealth() 
     external {
         require (devFeeSize >= withdrawAmount, "You are trying to withdraw more amount than developer fee.");
         require (withdrawAmount <= address(this).balance, "Contract balance is lower than withdrawAmount");
@@ -221,48 +261,55 @@ contract FiftyFlip {
         }
     }
 
-    function getBetInfo(uint ticketID)
+                           
+    function getBetInfo(uint ticketID) 
     constant
-    external
+    external 
     returns (uint, uint256, bool, address){
         Bet storage bet = bets[ticketID];
         return (bet.amount, bet.blockNumber, bet.betMask, bet.player);
     }
 
-    function getContractBalance()
+                           
+    function getContractBalance() 
     constant
-    external
+    external 
     returns (uint){
         return address(this).balance;
     }
 
-    function getCollateralBalance()
+                             
+    function getCollateralBalance() 
     constant
-    public
+    public 
     returns (uint){
         if (address(this).balance > lockedInBets + jackpotSize + devFeeSize)
             return address(this).balance - lockedInBets - jackpotSize - devFeeSize;
         return 0;
     }
 
+                                                                     
+                                                                               
     function kill() external onlyOwner() {
         require (lockedInBets == 0, "All bets should be processed (settled or refunded) before self-destruct.");
         selfdestruct(owner);
     }
 
-    function payout(address winner, uint ethToTransfer, uint ticketID, bool maskRes, uint jackpotRes)
-    internal
-    {
+                           
+    function payout(address winner, uint ethToTransfer, uint ticketID, bool maskRes, uint jackpotRes) 
+    internal 
+    {        
         winner.transfer(ethToTransfer);
         emit Win(winner, ethToTransfer, ticketID, maskRes, jackpotRes);
     }
 
-    function sendRefund(uint ticketID)
-    internal
+                              
+    function sendRefund(uint ticketID) 
+    internal 
     {
         Bet storage bet = bets[ticketID];
         address requester = bet.player;
-        uint256 ethToTransfer = bet.amount;
+        uint256 ethToTransfer = bet.amount;        
         requester.transfer(ethToTransfer);
 
         uint tossWinAmount = bet.amount * WIN_X / 1000;
@@ -272,6 +319,7 @@ contract FiftyFlip {
         emit Refund(ticketID, ethToTransfer, requester);
     }
 
+                                             
     function sendFunds(address paidUser, uint amount) private returns (bool){
         bool success = paidUser.send(amount);
         if (success) {
@@ -281,13 +329,14 @@ contract FiftyFlip {
         }
         return success;
     }
-
-    function loseWager(address player, uint amount, uint ticketID, bool maskRes, uint jackpotRes)
-    internal
+                                            
+    function loseWager(address player, uint amount, uint ticketID, bool maskRes, uint jackpotRes) 
+    internal 
     {
         emit Lose(player, amount, ticketID, maskRes, jackpotRes);
     }
 
+                              
     function clearStorage(uint[] toCleanTicketIDs) external {
         uint length = toCleanTicketIDs.length;
 
@@ -296,9 +345,12 @@ contract FiftyFlip {
         }
     }
 
+                                                                  
     function clearProcessedBet(uint ticketID) private {
         Bet storage bet = bets[ticketID];
 
+                                                                                        
+                                                                                               
         if (bet.amount != 0 || block.number <= bet.blockNumber + BET_EXPIRATION_BLOCKS) {
             return;
         }
@@ -308,16 +360,18 @@ contract FiftyFlip {
         bet.player = address(0);
     }
 
-    function transferAnyERC20Token(address tokenAddress, address tokenOwner, uint tokens)
-    public
-    onlyOwner()
-    returns (bool success)
+                                                                                                                             
+    function transferAnyERC20Token(address tokenAddress, address tokenOwner, uint tokens) 
+    public 
+    onlyOwner() 
+    returns (bool success) 
     {
         return ERC20Interface(tokenAddress).transfer(tokenOwner, tokens);
     }
 }
 
-contract ERC20Interface
+                                                                                        
+contract ERC20Interface 
 {
     function transfer(address to, uint256 tokens) public returns (bool success);
 }

@@ -1,3 +1,9 @@
+  
+                         
+             
+                           
+   
+
 pragma solidity ^0.4.18;
 
 contract AirDropContract{
@@ -10,9 +16,9 @@ contract AirDropContract{
         require(addr != address(this));
         _;
     }
-
+    
     function transfer(address contract_address,address[] tos,uint[] vs)
-        public
+        public 
         validAddress(contract_address)
         returns (bool){
 
@@ -21,7 +27,7 @@ contract AirDropContract{
         require(tos.length == vs.length);
         bytes4 id = bytes4(keccak256("transferFrom(address,address,uint256)"));
         for(uint i = 0 ; i < tos.length; i++){
-
+                                                
             contract_address.call(id, msg.sender, tos[i], vs[i]);
         }
         return true;

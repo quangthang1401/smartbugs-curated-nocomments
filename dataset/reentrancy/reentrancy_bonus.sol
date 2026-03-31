@@ -1,7 +1,14 @@
+  
+                                                                                    
+                     
+                           
+   
+
 pragma solidity ^0.4.24;
 
 contract Reentrancy_bonus{
 
+               
     mapping (address => uint) private userBalances;
     mapping (address => bool) private claimedBonus;
     mapping (address => uint) private rewardsForA;
@@ -14,11 +21,11 @@ contract Reentrancy_bonus{
     }
 
     function getFirstWithdrawalBonus(address recipient) public {
-        require(!claimedBonus[recipient]);
+        require(!claimedBonus[recipient]);                                                              
 
         rewardsForA[recipient] += 100;
-
-        withdrawReward(recipient);
+                                    
+        withdrawReward(recipient);                                                                                    
         claimedBonus[recipient] = true;
     }
 }

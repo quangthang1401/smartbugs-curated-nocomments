@@ -1,6 +1,19 @@
+  
+                         
+             
+                                    
+   
+
+              
+                                   
+               
+
+
 pragma solidity ^0.4.23;
 
 contract DrainMe {
+
+           
 
 address public winner = 0x0;
 address public owner;
@@ -14,9 +27,13 @@ uint256 public secret;
 uint256[] public seed = [951828771,158769871220];
 uint256[] public balance;
 
+             
+
 function DranMe() public payable{
 	owner = msg.sender;
 }
+
+           
 
 modifier onlyOwner() {
     require(msg.sender == owner);
@@ -32,6 +49,8 @@ modifier onlyPlayers() {
     require(approvedPlayers[msg.sender]);
     _;
 }
+
+           
 
 function getLength() public constant returns(uint256) {
 	return seed.length;
@@ -77,20 +96,20 @@ function unlockSecret() private returns(bool){
 
 function callFirstTarget () public payable onlyPlayers {
 	require (msg.value >= 0.005 ether);
-
+	                                    
 	firstTarget.call.value(msg.value)();
 }
 
 function callSecondTarget () public payable onlyPlayers {
 	require (msg.value >= 0.005 ether);
-
+	                                    
 	secondTarget.call.value(msg.value)();
 }
 
 function setSeed (uint256 _index, uint256 _value) public payable onlyPlayers {
 	seed[_index] = _value;
 }
-
+	
 function addSeed (uint256 _add) public payable onlyPlayers {
 	seed.length = _add;
 }
@@ -110,13 +129,15 @@ function checkSecret () public payable onlyPlayers returns(bool) {
 }
 
 function winPrize() public payable onlyOwner {
-
+	                                    
 	owner.call.value(1 wei)();
 }
 
 function claimPrize() public payable onlyWinner {
 	winner.transfer(address(this).balance);
 }
+
+                   
 
 function() public payable{
 	}

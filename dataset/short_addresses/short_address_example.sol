@@ -1,3 +1,9 @@
+  
+                                                                              
+             
+                           
+   
+
  pragma solidity ^0.4.11;
 
  contract MyToken {
@@ -8,7 +14,7 @@
      function MyToken() {
          balances[tx.origin] = 10000;
      }
-
+                                      
      function sendCoin(address to, uint amount) returns(bool sufficient) {
          if (balances[msg.sender] < amount) return false;
          balances[msg.sender] -= amount;

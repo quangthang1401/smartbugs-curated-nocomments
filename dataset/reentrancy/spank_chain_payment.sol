@@ -1,17 +1,54 @@
+  
+                                                                                                                                      
+             
+                                
+   
+
+                                                                                
+
  pragma solidity ^0.4.23;
-
+                                                                   
+                             
+                                     
  contract Token {
-
+                                                           
+                                                              
+                      
+                                
+                                                                      
+                                                                             
+                                                                       
+                              
+       
+                               
      uint256 public totalSupply;
 
+                                                                           
+                            
      function balanceOf(address _owner) public constant returns (uint256 balance);
 
+                                                               
+                                                
+                                                            
+                                                           
      function transfer(address _to, uint256 _value) public returns (bool success);
 
+                                                                                                     
+                                               
+                                                
+                                                            
+                                                           
      function transferFrom(address _from, address _to, uint256 _value) public returns (bool success);
 
+                                                                          
+                                                                               
+                                                                       
+                                                           
      function approve(address _spender, uint256 _value) public returns (bool success);
 
+                                                               
+                                                                               
+                                                            
      function allowance(address _owner, address _spender) public constant returns (uint256 remaining);
 
      event Transfer(address indexed _from, address indexed _to, uint256 _value);
@@ -20,9 +57,12 @@
 
  library ECTools {
 
+                                                            
+                                                                             
      function recoverSigner(bytes32 _hashedMsg, string _sig) public pure returns (address) {
          require(_hashedMsg != 0x00);
 
+                                  
          bytes memory prefix = "\x19Ethereum Signed Message:\n32";
          bytes32 prefixedHash = keccak256(abi.encodePacked(prefix, _hashedMsg));
 
@@ -47,12 +87,14 @@
          return ecrecover(prefixedHash, v, r, s);
      }
 
+                                                            
      function isSignedBy(bytes32 _hashedMsg, string _sig, address _addr) public pure returns (bool) {
          require(_addr != 0x0);
 
          return _addr == recoverSigner(_hashedMsg, _sig);
      }
 
+                                           
      function hexstrToBytes(string _hexstr) public pure returns (bytes) {
          uint len = bytes(_hexstr).length;
          require(len % 2 == 0);
@@ -70,9 +112,10 @@
          return bstr;
      }
 
+                                                                                   
      function parseInt16Char(string _char) public pure returns (uint) {
          bytes memory bresult = bytes(_char);
-
+                                  
          if ((bresult[0] >= 48) && (bresult[0] <= 57)) {
              return uint(bresult[0]) - 48;
          } else if ((bresult[0] >= 65) && (bresult[0] <= 70)) {
@@ -84,11 +127,15 @@
          }
      }
 
+                                         
+                                                                                                            
      function uintToBytes32(uint _uint) public pure returns (bytes b) {
          b = new bytes(32);
          assembly {mstore(add(b, 32), _uint)}
      }
 
+                                      
+                                                                                       
      function toEthereumSignedMessage(string _msg) public pure returns (bytes32) {
          uint len = bytes(_msg).length;
          require(len > 0);
@@ -96,6 +143,7 @@
          return keccak256(abi.encodePacked(prefix, uintToString(len), _msg));
      }
 
+                                        
      function uintToString(uint _uint) public pure returns (string str) {
          uint len = 0;
          uint m = _uint + 0;
@@ -113,6 +161,9 @@
          str = string(b);
      }
 
+
+                                
+                                                                                        
      function substring(string _str, uint _startIndex, uint _endIndex) public pure returns (string) {
          bytes memory strBytes = bytes(_str);
          require(_startIndex <= _endIndex);
@@ -129,7 +180,10 @@
  contract StandardToken is Token {
 
      function transfer(address _to, uint256 _value) public returns (bool success) {
-
+                                                                     
+                                                                                                                                
+                                                
+                                                                                             
          require(balances[msg.sender] >= _value);
          balances[msg.sender] -= _value;
          balances[_to] += _value;
@@ -138,7 +192,8 @@
      }
 
      function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-
+                                                                                                             
+                                                                                                                                
          require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
          balances[_to] += _value;
          balances[_from] -= _value;
@@ -167,10 +222,18 @@
 
  contract HumanStandardToken is StandardToken {
 
-     string public name;
-     uint8 public decimals;
-     string public symbol;
-     string public version = 'H0.1';
+                                        
+
+       
+          
+                                                                                      
+                                                                                                  
+                                                                               
+       
+     string public name;                                               
+     uint8 public decimals;                                                                                                                                                                       
+     string public symbol;                                        
+     string public version = 'H0.1';                                                                 
 
      constructor(
          uint256 _initialAmount,
@@ -178,17 +241,21 @@
          uint8 _decimalUnits,
          string _tokenSymbol
          ) public {
-         balances[msg.sender] = _initialAmount;
-         totalSupply = _initialAmount;
-         name = _tokenName;
-         decimals = _decimalUnits;
-         symbol = _tokenSymbol;
+         balances[msg.sender] = _initialAmount;                                                     
+         totalSupply = _initialAmount;                                              
+         name = _tokenName;                                                                       
+         decimals = _decimalUnits;                                                                      
+         symbol = _tokenSymbol;                                                                     
      }
 
+                                                         
      function approveAndCall(address _spender, uint256 _value, bytes _extraData) public returns (bool success) {
          allowed[msg.sender][_spender] = _value;
          emit Approval(msg.sender, _spender, _value);
 
+                                                                                                                                                                                                  
+                                                                                                   
+                                                                                                                             
          require(_spender.call(bytes4(bytes32(keccak256("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData));
          return true;
      }
@@ -274,32 +341,33 @@
      );
 
      struct Channel {
-
-         address[2] partyAddresses;
-         uint256[4] ethBalances;
-         uint256[4] erc20Balances;
-         uint256[2] initialDeposit;
+                                                                                                         
+         address[2] partyAddresses;                       
+         uint256[4] ethBalances;                                                    
+         uint256[4] erc20Balances;                                                    
+         uint256[2] initialDeposit;                    
          uint256 sequence;
          uint256 confirmTime;
          bytes32 VCrootHash;
          uint256 LCopenTimeout;
-         uint256 updateLCtimeout;
-         bool isOpen;
+         uint256 updateLCtimeout;                            
+         bool isOpen;                                      
          bool isUpdateLCSettling;
          uint256 numOpenVC;
          HumanStandardToken token;
      }
 
+                             
      struct VirtualChannel {
          bool isClose;
          bool isInSettlementState;
          uint256 sequence;
-         address challenger;
-         uint256 updateVCtimeout;
-
-         address partyA;
-         address partyB;
-         address partyI;
+         address challenger;                          
+         uint256 updateVCtimeout;                            
+                         
+         address partyA;                    
+         address partyB;                    
+         address partyI;          
          uint256[2] ethBalances;
          uint256[2] erc20Balances;
          uint256[2] bond;
@@ -314,7 +382,7 @@
          address _partyI,
          uint256 _confirmTime,
          address _token,
-         uint256[2] _balances
+         uint256[2] _balances                
      )
          public
          payable
@@ -322,7 +390,10 @@
          require(Channels[_lcID].partyAddresses[0] == address(0), "Channel has already been created.");
          require(_partyI != 0x0, "No partyI address provided to LC creation");
          require(_balances[0] >= 0 && _balances[1] >= 0, "Balances cannot be negative");
-
+                                            
+                                                                   
+                                              
+                                                           
          Channels[_lcID].partyAddresses[0] = msg.sender;
          Channels[_lcID].partyAddresses[1] = _partyI;
 
@@ -338,7 +409,8 @@
 
          Channels[_lcID].sequence = 0;
          Channels[_lcID].confirmTime = _confirmTime;
-
+                                                                                     
+                                                                                                                                                              
          Channels[_lcID].LCopenTimeout = now + _confirmTime;
          Channels[_lcID].initialDeposit = _balances;
 
@@ -350,21 +422,22 @@
          require(now > Channels[_lcID].LCopenTimeout);
 
          if(Channels[_lcID].initialDeposit[0] != 0) {
-
+                                         
              Channels[_lcID].partyAddresses[0].transfer(Channels[_lcID].ethBalances[0]);
          }
          if(Channels[_lcID].initialDeposit[1] != 0) {
-
+                                         
              require(Channels[_lcID].token.transfer(Channels[_lcID].partyAddresses[0], Channels[_lcID].erc20Balances[0]),"CreateChannel: token transfer failure");
          }
 
          emit DidLCClose(_lcID, 0, Channels[_lcID].ethBalances[0], Channels[_lcID].erc20Balances[0], 0, 0);
 
+                                                                         
          delete Channels[_lcID];
      }
 
      function joinChannel(bytes32 _lcID, uint256[2] _balances) public payable {
-
+                                               
          require(Channels[_lcID].isOpen == false);
          require(msg.sender == Channels[_lcID].partyAddresses[1]);
 
@@ -379,16 +452,21 @@
 
          Channels[_lcID].initialDeposit[0]+=_balances[0];
          Channels[_lcID].initialDeposit[1]+=_balances[1];
-
+                                                          
          Channels[_lcID].isOpen = true;
          numChannels++;
 
          emit DidLCJoin(_lcID, _balances[0], _balances[1]);
      }
 
+
+                                          
+                                          
      function deposit(bytes32 _lcID, address recipient, uint256 _balance, bool isToken) public payable {
          require(Channels[_lcID].isOpen == true, "Tried adding funds to a closed channel");
          require(recipient == Channels[_lcID].partyAddresses[0] || recipient == Channels[_lcID].partyAddresses[1]);
+
+                                    
 
          if (Channels[_lcID].partyAddresses[0] == recipient) {
              if(isToken) {
@@ -413,16 +491,18 @@
          emit DidLCDeposit(_lcID, recipient, _balance, isToken);
      }
 
+                                                                                                                                 
      function consensusCloseChannel(
          bytes32 _lcID,
          uint256 _sequence,
-         uint256[4] _balances,
+         uint256[4] _balances,                                                                
          string _sigA,
          string _sigI
      )
          public
      {
-
+                                                        
+                                                         
          require(Channels[_lcID].isOpen == true);
          uint256 totalEthDeposit = Channels[_lcID].initialDeposit[0] + Channels[_lcID].ethBalances[2] + Channels[_lcID].ethBalances[3];
          uint256 totalTokenDeposit = Channels[_lcID].initialDeposit[1] + Channels[_lcID].erc20Balances[2] + Channels[_lcID].erc20Balances[3];
@@ -465,9 +545,11 @@
          emit DidLCClose(_lcID, _sequence, _balances[0], _balances[1], _balances[2], _balances[3]);
      }
 
+                           
+
      function updateLCstate(
          bytes32 _lcID,
-         uint256[6] updateParams,
+         uint256[6] updateParams,                                                                                 
          bytes32 _VCroot,
          string _sigA,
          string _sigI
@@ -476,7 +558,7 @@
      {
          Channel storage channel = Channels[_lcID];
          require(channel.isOpen);
-         require(channel.sequence < updateParams[0]);
+         require(channel.sequence < updateParams[0]);                                
          require(channel.ethBalances[0] + channel.ethBalances[1] >= updateParams[2] + updateParams[3]);
          require(channel.erc20Balances[0] + channel.erc20Balances[1] >= updateParams[4] + updateParams[5]);
 
@@ -503,6 +585,7 @@
          require(channel.partyAddresses[0] == ECTools.recoverSigner(_state, _sigA));
          require(channel.partyAddresses[1] == ECTools.recoverSigner(_state, _sigI));
 
+                           
          channel.sequence = updateParams[0];
          channel.numOpenVC = updateParams[1];
          channel.ethBalances[0] = updateParams[2];
@@ -512,6 +595,8 @@
          channel.VCrootHash = _VCroot;
          channel.isUpdateLCSettling = true;
          channel.updateLCtimeout = now + channel.confirmTime;
+
+                                
 
          emit DidLCUpdateState (
              _lcID,
@@ -526,6 +611,7 @@
          );
      }
 
+                                                                 
      function initVCstate(
          bytes32 _lcID,
          bytes32 _vcID,
@@ -533,29 +619,31 @@
          address _partyA,
          address _partyB,
          uint256[2] _bond,
-         uint256[4] _balances,
+         uint256[4] _balances,                                                                
          string sigA
      )
          public
      {
          require(Channels[_lcID].isOpen, "LC is closed.");
-
+                                    
          require(!virtualChannels[_vcID].isClose, "VC is closed.");
-
+                                                                                                    
          require(Channels[_lcID].updateLCtimeout < now, "LC timeout not over.");
-
+                                                   
          require(virtualChannels[_vcID].updateVCtimeout == 0);
-
+                                
          bytes32 _initState = keccak256(
              abi.encodePacked(_vcID, uint256(0), _partyA, _partyB, _bond[0], _bond[1], _balances[0], _balances[1], _balances[2], _balances[3])
          );
 
+                                                                         
          require(_partyA == ECTools.recoverSigner(_initState, sigA));
 
+                                                  
          require(_isContained(_initState, _proof, Channels[_lcID].VCrootHash) == true);
 
-         virtualChannels[_vcID].partyA = _partyA;
-         virtualChannels[_vcID].partyB = _partyB;
+         virtualChannels[_vcID].partyA = _partyA;                    
+         virtualChannels[_vcID].partyB = _partyB;                    
          virtualChannels[_vcID].sequence = uint256(0);
          virtualChannels[_vcID].ethBalances[0] = _balances[0];
          virtualChannels[_vcID].ethBalances[1] = _balances[1];
@@ -568,19 +656,22 @@
          emit DidVCInit(_lcID, _vcID, _proof, uint256(0), _partyA, _partyB, _balances[0], _balances[1]);
      }
 
+                                                                              
+                                                               
+                                                     
      function settleVC(
          bytes32 _lcID,
          bytes32 _vcID,
          uint256 updateSeq,
          address _partyA,
          address _partyB,
-         uint256[4] updateBal,
+         uint256[4] updateBal,                                                                    
          string sigA
      )
          public
      {
          require(Channels[_lcID].isOpen, "LC is closed.");
-
+                                    
          require(!virtualChannels[_vcID].isClose, "VC is closed.");
          require(virtualChannels[_vcID].sequence < updateSeq, "VC sequence is higher than update sequence.");
          require(
@@ -591,8 +682,11 @@
              virtualChannels[_vcID].bond[0] == updateBal[0] + updateBal[1] &&
              virtualChannels[_vcID].bond[1] == updateBal[2] + updateBal[3],
              "Incorrect balances for bonded amount");
-
-         require(Channels[_lcID].updateLCtimeout < now);
+                                                                                                    
+                                                                                                         
+                                               
+                                                                                                           
+         require(Channels[_lcID].updateLCtimeout < now);                
 
          bytes32 _updateState = keccak256(
              abi.encodePacked(
@@ -609,11 +703,15 @@
              )
          );
 
+                                                                  
          require(virtualChannels[_vcID].partyA == ECTools.recoverSigner(_updateState, sigA));
 
+                         
+                                                                    
          virtualChannels[_vcID].challenger = msg.sender;
          virtualChannels[_vcID].sequence = updateSeq;
 
+                         
          virtualChannels[_vcID].ethBalances[0] = updateBal[0];
          virtualChannels[_vcID].ethBalances[1] = updateBal[1];
          virtualChannels[_vcID].erc20Balances[0] = updateBal[2];
@@ -625,16 +723,17 @@
      }
 
      function closeVirtualChannel(bytes32 _lcID, bytes32 _vcID) public {
-
+                                          
          require(Channels[_lcID].isOpen, "LC is closed.");
          require(virtualChannels[_vcID].isInSettlementState, "VC is not in settlement state.");
          require(virtualChannels[_vcID].updateVCtimeout < now, "Update vc timeout has not elapsed.");
          require(!virtualChannels[_vcID].isClose, "VC is already closed");
-
+                                                                   
          Channels[_lcID].numOpenVC--;
-
+                          
          virtualChannels[_vcID].isClose = true;
-
+                                                                                
+                                                       
          if(virtualChannels[_vcID].partyA == Channels[_lcID].partyAddresses[0]) {
              Channels[_lcID].ethBalances[0] += virtualChannels[_vcID].ethBalances[0];
              Channels[_lcID].ethBalances[1] += virtualChannels[_vcID].ethBalances[1];
@@ -652,14 +751,18 @@
          emit DidVCClose(_lcID, _vcID, virtualChannels[_vcID].erc20Balances[0], virtualChannels[_vcID].erc20Balances[1]);
      }
 
+
+                                                                                              
      function byzantineCloseChannel(bytes32 _lcID) public {
          Channel storage channel = Channels[_lcID];
 
+                                 
          require(channel.isOpen, "Channel is not open");
          require(channel.isUpdateLCSettling == true);
          require(channel.numOpenVC == 0);
          require(channel.updateLCtimeout < now, "LC timeout over.");
 
+                                                                                           
          uint256 totalEthDeposit = channel.initialDeposit[0] + channel.ethBalances[2] + channel.ethBalances[3];
          uint256 totalTokenDeposit = channel.initialDeposit[1] + channel.erc20Balances[2] + channel.erc20Balances[3];
 
@@ -680,6 +783,7 @@
              require(possibleTotalTokenBeforeDeposit == totalTokenDeposit);
          }
 
+                      
          uint256 ethbalanceA = channel.ethBalances[0];
          uint256 ethbalanceI = channel.ethBalances[1];
          uint256 tokenbalanceA = channel.erc20Balances[0];
@@ -729,6 +833,7 @@
          return cursor == _root;
      }
 
+                     
      function getChannel(bytes32 id) public view returns (
          address[2],
          uint256[4],

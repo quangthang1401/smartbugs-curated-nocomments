@@ -1,3 +1,9 @@
+  
+                                                                                                                      
+             
+                                 
+   
+
 pragma solidity ^0.4.25;
 
 contract DosGas {
@@ -6,7 +12,7 @@ contract DosGas {
     bool win = false;
 
     function emptyCreditors() public {
-
+                                           
         if(creditorAddresses.length>1500) {
             creditorAddresses = new address[](0);
             win = true;
