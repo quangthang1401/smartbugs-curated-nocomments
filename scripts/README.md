@@ -1,8 +1,8 @@
-Create a viurtal environment
+Create a viurtal environment: 
 python3 -m venv venv
 
-Activate virtual environment
+Activate virtual environment: 
 source venv/bin/activate
 
-Install packet
+Install packet: 
 pip install fastmcp mcp pandas requests openpyxl
